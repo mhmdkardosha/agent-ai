@@ -2,7 +2,7 @@ import logging
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(override=True)
 
 
 from livekit import agents
@@ -93,7 +93,7 @@ async def my_agent(ctx: agents.JobContext):
         # model="llama3.1:8b",
         # base_url=os.getenv("OLLAMA_BASE_URL"),
     ),
-         llm=google.LLM(model='gemini-2.5-flash'),
+         llm=google.LLM(model='gemini-3.5-flash'),
         tts=google.TTS(
             language=default_config["tts_lang"],
             voice_name=default_config["voice_name"],
