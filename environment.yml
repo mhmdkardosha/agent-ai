@@ -1,0 +1,13 @@
+name: livekit-agent
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - livekit-agents
+      - livekit-plugins-google
+      - livekit-plugins-silero
+      - python-dotenv
+      - llama-index  # For the RAG implementation

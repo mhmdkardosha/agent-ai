@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment / secrets
+.env
+service-account.json
+*.key
+*.pem
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.codex/
+
+# Tests
+tests/
+
+# Runtime / cache
+.pytest_cache/
+.agents/
+*.egg-info/
+*.egg
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
