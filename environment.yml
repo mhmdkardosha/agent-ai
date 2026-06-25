@@ -11,5 +11,8 @@ dependencies:
       - livekit-plugins-silero
       - livekit-plugins-turn-detector
       - python-dotenv
-      - llama-index  # For the RAG implementation
+      - llama-index
+      - requests
+      - fastapi
+      - pydantic
       - ruff
