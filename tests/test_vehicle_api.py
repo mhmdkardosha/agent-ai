@@ -54,3 +54,28 @@ def test_extra_fields_ignored():
         },
     )
     assert resp.status_code == 200
+
+
+def test_vehicle_location_returns_coordinates():
+    resp = client.get("/api/vehicle/location")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "vehicle_id" in data
+    assert "lat" in data
+    assert "lng" in data
+    assert isinstance(data["lat"], float)
+    assert isinstance(data["lng"], float)
+
+
+def test_vehicle_location_default_values():
+    resp = client.get("/api/vehicle/location")
+    data = resp.json()
+    assert data["vehicle_id"] == "vehicle_001"
+
+
+def test_invalid_action_is_rejected():
+    resp = client.post(
+        "/api/vehicle/action",
+        json={"vehicle_id": "vehicle_001", "action": "accelerate", "parameters": {}},
+    )
+    assert resp.status_code == 422
