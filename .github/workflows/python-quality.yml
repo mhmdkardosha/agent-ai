@@ -34,9 +34,9 @@ jobs:
         run: |
           ruff check .
 
-      - name: Install test dependencies
+      - name: Install project with test extras
         run: |
-          pip install fastapi pydantic httpx2 pytest pytest-asyncio requests python-dotenv
+          pip install -e ".[test]"
 
       - name: Run tests
         run: |
