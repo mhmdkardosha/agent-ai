@@ -5,6 +5,7 @@ import re
 from collections.abc import AsyncGenerator, AsyncIterable
 
 import httpx2
+import requests
 from dotenv import load_dotenv
 
 load_dotenv(override=True)
