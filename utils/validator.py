@@ -13,6 +13,10 @@ EXPECTED_PARAMETERS = {
     "music_play": set(),
     "music_pause": set(),
     "set_volume": {"change"},
+    "reading_light_on": set(),
+    "reading_light_off": set(),
+    "cancel_destination": set(),
+    "safe_stop": set(),
 }
 
 

@@ -1,7 +1,3 @@
-*Maintained by Khaled Zakaria, Khaled Helmy, and Mohamed Kardosha.*
-
-> **Note:** The commit `feat: implement vehicle action model and APIs` was authored by **Khaled Helmy** and reviewed by **Khaled Zakaria**. Their names do not appear in the commit history due to a necessary history rewrite for consistency.
-
 # Yaquod Agent
 
 A bilingual (Arabic/English) real-time voice AI assistant powered by **LiveKit Agents** with **Azure Speech STT**, **Cartesia TTS**, and **Gemini LLM**.
@@ -15,6 +11,7 @@ A bilingual (Arabic/English) real-time voice AI assistant powered by **LiveKit A
 - **Cartesia Sonic-3** for text-to-speech (via LiveKit Inference)
 - **Google Gemini 3.1 Flash Lite** for conversational LLM (via LiveKit Inference)
 - **Multilingual turn detection** for natural conversation flow
+- **Nearby Places Search** — find restaurants, gas stations, hospitals, and more using Google Maps Places API
 
 ## Prerequisites
 
@@ -48,6 +45,7 @@ A bilingual (Arabic/English) real-time voice AI assistant powered by **LiveKit A
    | `LIVEKIT_API_SECRET` | LiveKit Cloud API secret |
    | `AZURE_SPEECH_KEY` | Azure Speech Services key |
    | `AZURE_SPEECH_REGION` | Azure Speech Services region (e.g. `eastus`) |
+   | `GOOGLE_MAPS_API_KEY` | Google Maps Places API key (required for nearby places search) |
 
 3. **Run the agent:**
 
@@ -145,9 +143,13 @@ The agent greets in Arabic by default. Speak in Arabic or English — it auto-de
 ## Architecture
 
 - `agent.py` — Main application defining the `Assistant` class and RTC session
+- `config/` — Shared constants (`ALLOWED_ACTIONS`, validation sets)
+- `llm/` — `SYSTEM_PROMPT` and `STARTER_GREETING` prompt strings
+- `utils/` — Parameter validation logic (`validate_vehicle_action`)
+- `routes/` — FastAPI app (`vehicle_api.py`) and request models (`vehicle_action_model.py`)
 - `environment.yml` — Conda environment specification
-- `pyproject.toml` — Linting and formatting configuration (ruff)
-- `tests/` — Unit tests for the agent configuration
+- `pyproject.toml` — Linting, formatting, and packaging configuration (ruff + setuptools)
+- `tests/` — Unit and integration tests
 
 The agent uses LiveKit Agents **v1 session API** (`Agent`, `AgentServer`, `AgentSession`):
 
@@ -157,3 +159,11 @@ The agent uses LiveKit Agents **v1 session API** (`Agent`, `AgentServer`, `Agent
 - **VAD**: Silero VAD for turn detection
 
 Azure Speech requires its own API key and region. LiveKit Inference handles the rest (LLM, TTS) — no separate API keys needed beyond LiveKit Cloud credentials.
+
+## Contribution
+*Maintained by Khaled Zakaria, Khaled Helmy, and Mohamed Kardosha.*
+
+> **Note:** The commit `feat: implement vehicle action model and APIs` was authored by **Khaled Helmy** and reviewed by **Khaled Zakaria**. Their names do not appear in the commit history due to a necessary history rewrite for consistency.
+
+We accept contributions from all over the world! However, please note that our code is written in English and all commits should be in English.
+
