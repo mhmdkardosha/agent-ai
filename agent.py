@@ -21,7 +21,9 @@ from livekit.agents import (
 )
 from livekit.plugins import azure
 
-from routes.models.vehicle_action_model import ALLOWED_ACTIONS
+from config.constants import ALLOWED_ACTIONS
+from llm.prompts import STARTER_GREETING, SYSTEM_PROMPT
+from utils.validator import validate_vehicle_action
 
 _TASHKEEL_RE = re.compile(r"[\u064B-\u065F\u0670]")
 
@@ -31,13 +33,6 @@ def _strip_tashkeel(text: str) -> str:
 
 
 logger = logging.getLogger("yaquod-agent")
-
-
-STARTER_GREETING = (
-    "You are Yaquod (يَقُودْ). Greet the user warmly in one short Egyptian Arabic sentence, then ask how you can help.\n"
-    "TASHKEEL: Add full tashkeel to every word.\n"
-    "RESPONSE: Keep responses short, warm, and conversational."
-)
 
 _ARABIC_VOICE = (
     "f786b574-daa5-4673-aa0c-cbe3e8534c02"  # Katie (Cartesia default) — multilingual, works with ar
@@ -50,62 +45,13 @@ LANGUAGE_CONFIGS = {
 }
 
 DEFAULT_LANG = "ar"
-
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
 VEHICLE_API_URL = "https://yaquod-agent.fastapicloud.dev/api/vehicle"
 
 
 class Assistant(Agent):
     def __init__(self) -> None:
-        super().__init__(
-            instructions=(
-                "<role>\n"
-                "You are Yaquod (يَقُود), a friendly voice assistant inside an autonomous vehicle.\n"
-                "</role>\n\n"
-                "<languages>\n"
-                "- Support Egyptian Arabic (اللهجة المصرية) and English.\n"
-                "- Detect the user's language on every turn.\n"
-                "- If it differs from the current language, call switch_language.\n"
-                "- Always reply in the language the user just used.\n"
-                "</languages>\n"
-                "\n"
-                "<vehicle_actions>\n"
-                "You ONLY control predefined vehicle actions.\n"
-                "You must NEVER execute arbitrary commands.\n"
-                "If user requests a vehicle action, call vehicle_action tool.\n\n"
-                "Allowed actions:\n"
-                "- Climate: ac_on, ac_off, set_level\n"
-                "- Windows: window_open, window_close\n"
-                "- Media: music_play, music_pause, set_volume, next_track, previous_track\n"
-                "- Lights: reading_light_on, reading_light_off\n"
-                "- Navigation: change_destination, cancel_destination\n"
-                "- Safety: safe_stop\n\n"
-                "NEVER execute:\n"
-                "- accelerate\n"
-                "- brake manually\n"
-                "- steer\n"
-                "- lane change\n"
-                "- override autonomous driving\n"
-                "- disable safety systems\n"
-                "</vehicle_actions>\n\n"
-                "<tone>\n"
-                "Keep responses short, natural, and spoken.\n"
-                "</tone>\n"
-                "\n"
-                "<arabic_rule>\n"
-                "TASHKEEL: Every Arabic word MUST have full tashkeel "
-                "(fatha, kasra, damma, sukun, shadda). Without it the TTS "
-                "mispronounces words.\n"
-                "</arabic_rule>\n"
-                "\n"
-                "<places_search>\n"
-                "If the user asks about nearby places (restaurants, gas stations, hospitals, etc.), "
-                "use search_nearby_places tool. Keep the query natural (e.g., 'coffee shops', 'gas station'). "
-                "The vehicle GPS location is fetched automatically. Return up to 5 results with name, address, "
-                "rating, and open/closed status.\n"
-                "</places_search>"
-            )
-        )
+        super().__init__(instructions=SYSTEM_PROMPT)
         self._current_lang = DEFAULT_LANG
 
     async def transcription_node(
@@ -146,12 +92,19 @@ class Assistant(Agent):
         action: str,
         parameters: dict | None = None,
     ) -> str:
+        parameters = parameters or {}
 
         # Safety whitelist check
         if action not in ALLOWED_ACTIONS:
             return "This action is not allowed."
 
-        payload = {"vehicle_id": "vehicle_001", "action": action, "parameters": parameters or {}}
+        # Validate parameters
+        error = validate_vehicle_action(action, parameters)
+
+        if error:
+            return error
+
+        payload = {"vehicle_id": "vehicle_001", "action": action, "parameters": parameters}
 
         logger.info("Vehicle Action:\n%s", json.dumps(payload, indent=2))
 

@@ -21,6 +21,27 @@ def mock_context():
     return ctx
 
 
+VALID_PARAMETERS = {
+    "ac_on": {},
+    "ac_off": {},
+    "set_temperature": {"zone": "both", "temperature": 22},
+    "set_fan_speed": {"speed": 3},
+    "set_airflow_mode": {"mode": "face"},
+    "climate_auto": {"enabled": True},
+    "climate_sync": {"enabled": True},
+    "window_open": {"window": "all", "percentage": 100},
+    "window_close": {"window": "all", "percentage": 0},
+    "music_play": {},
+    "music_pause": {},
+    "set_volume": {"change": 5},
+    "reading_light_on": {},
+    "reading_light_off": {},
+    "change_destination": {},
+    "cancel_destination": {},
+    "safe_stop": {},
+}
+
+
 class TestVehicleAction:
     async def test_allowed_action_returns_success(self, assistant, mock_context):
         with patch("httpx2.AsyncClient") as mock_client:
@@ -40,15 +61,15 @@ class TestVehicleAction:
             mock_post.return_value = mock_response
 
             await assistant.vehicle_action(
-                mock_context, action="set_level", parameters={"level": 3}
+                mock_context, action="set_fan_speed", parameters={"speed": 3}
             )
 
         mock_post.assert_called_once_with(
             "https://yaquod-agent.fastapicloud.dev/api/vehicle/action",
             json={
                 "vehicle_id": "vehicle_001",
-                "action": "set_level",
-                "parameters": {"level": 3},
+                "action": "set_fan_speed",
+                "parameters": {"speed": 3},
             },
         )
 
@@ -101,7 +122,9 @@ class TestVehicleAction:
                 mock_response = MagicMock()
                 mock_response.is_success = True
                 mock_client.return_value.__aenter__.return_value.post.return_value = mock_response
-                result = await assistant.vehicle_action(mock_context, action=action)
+                result = await assistant.vehicle_action(
+                    mock_context, action=action, parameters=VALID_PARAMETERS[action]
+                )
             assert result == f"Executed {action}", f"Failed for action: {action}"
 
 

@@ -59,3 +59,22 @@ ignore = [
 quote-style = "double"
 indent-style = "space"
 line-ending = "auto"
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["agent"]
+
+[tool.setuptools.packages.find]
+include = [
+    "config",
+    "config.*",
+    "llm",
+    "llm.*",
+    "routes",
+    "routes.*",
+    "utils",
+    "utils.*",
+]
