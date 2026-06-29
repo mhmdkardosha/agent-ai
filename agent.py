@@ -136,11 +136,10 @@ class Assistant(Agent):
         api_lang = self._current_lang if self._current_lang in ["ar", "en"] else "ar"
         logger.info(f"Initiating weather fetch for vehicle. Language: {api_lang}")
 
-        
         try:
             # Get vehicle location
             vehicle_location_url = "https://yaquod-agent.fastapicloud.dev/api/vehicle/location"
-            
+
             async with httpx2.AsyncClient() as client:
                 loc_response = await client.get(
                     vehicle_location_url, headers={"accept": "application/json"}, timeout=5
@@ -163,7 +162,7 @@ class Assistant(Agent):
 
         # Get Weather
         weather_api_key = os.environ.get("WEATHER_API_KEY")
-        weather_url = "https://api.weatherapi.com/v1/current.json" 
+        weather_url = "https://api.weatherapi.com/v1/current.json"
 
         weather_params = {"key": weather_api_key, "q": f"{lat},{lon}", "lang": api_lang}
 
@@ -186,8 +185,6 @@ class Assistant(Agent):
         except Exception as e:
             logger.error(f"Weather API exception: {e}")
             return "Weather system unavailable."
-
-
 
     async def _get_vehicle_location(self) -> tuple[float, float] | None:
         """Fetch current vehicle location from the vehicle API."""
