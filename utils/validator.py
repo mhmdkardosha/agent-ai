@@ -114,7 +114,7 @@ def validate_vehicle_action(action: str, parameters: dict | None) -> str | None:
         if seat not in VALID_SEAT_TYPE:
             return "not supported seat"
 
-        if not isinstance(percentage, int):
+        if type(percentage) is not int:
             return "Invalid percentage."
 
         if action == "seat_recline" and not (-90 <= percentage <= 100):
