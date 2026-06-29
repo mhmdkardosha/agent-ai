@@ -120,7 +120,7 @@ def validate_vehicle_action(action: str, parameters: dict | None) -> str | None:
         if action == "seat_recline" and not (-90 <= percentage <= 100):
             return "Percentage must be between -90 and 100"
 
-        if action in ("seat_position", "seat_height") and not (-0 <= percentage <= 100):
+        if action in ("seat_position", "seat_height") and not (0 <= percentage <= 100):
             return "Percentage must be between 0 and 100"
 
     elif action in ("reading_light_on", "reading_light_off"):
